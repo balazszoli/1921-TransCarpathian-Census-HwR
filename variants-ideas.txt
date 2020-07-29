@@ -1,0 +1,81 @@
+### Variants on finding intersections ###
+
+# def line(p1, p2):
+#     A = (p1[1] - p2[1])
+#     B = (p2[0] - p1[0])
+#     C = (p1[0] * p2[1] - p2[0] * p1[1])
+#     return A, B, -C
+#
+# def intersection(L1, L2):
+#     D = L1[0] * L2[1] - L1[1] * L2[0]
+#     Dx = L1[2] * L2[1] - L1[1] * L2[2]
+#     Dy = L1[0] * L2[2] - L1[2] * L2[0]
+#     if D != 0:
+#         x = Dx / D
+#         y = Dy / D
+#         return int(x), int(y)
+#     else:
+#         return False
+#
+# dots = []
+#
+# # Find intersection of horizontal and vertical lines and plot them on image (just for observation)
+# for hor_line in horizontal:
+#     L1 = line(hor_line[:2], hor_line[2:])
+#
+#     for ver_line in vertical:
+#
+#         L2 = line(ver_line[:2], ver_line[2:])
+#         inter = intersection(L1, L2)
+#         print(inter)
+#         if inter:
+#             dots.append(inter)
+#             cv2.circle(cdst, inter, 10, (255, 0, 0), 2)
+
+#   Variant 2: Find intersections by coordinates
+#
+# def intersect2(l1,l2):
+#     x1,y1,x2,y2 = l1  # l1[0],l1[2],l1[3],l1[4]
+#     x3,y3,x4,y4 = l2  # l2[0],l2[2],l2[3],l2[4]
+#     numerat_x =  np.int64((x1*y2-y1*x2)*(x3-x4))
+#     numerat_x -= np.int64((x1-x2)*(x3*y4-y3*x4))
+#     numerat_y =  np.int64((x1*y2-y1*x2)*(y3-y4))
+#     numerat_y -= np.int64((y1-y2)*(x3*y4-y3*x4))
+#     denominat =  np.int64((x1-x2)*(y3-y4))
+#     denominat -= np.int64((y1-y2)*(x3-x4))
+#     x=int(numerat_x/denominat)
+#     y=int(numerat_y/denominat)
+#     print(x,y)
+#     return x,y
+#
+# dots = []
+#
+# for hor_line in horizontal:
+# #    print(hor_line)
+#     for ver_line in vertical:
+# #        print(ver_line)
+#         inter = intersect2(hor_line, ver_line)
+#         if inter:
+#             dots.append(inter)
+#            cv2.circle(cdst, inter, 10, (255, 0, 0) , 2)
+# #
+
+# Var3: https://pypi.org/project/bentley-ottmann/ or https://github.com/splichte/lsi
+# We don't need this variant, only if we would have perpendicular lines, which are not parallel to layout edges
+
+
+###
+
+# var1 to find unique column_points and row_points
+# mylist_x = [x[0] for x in dots]
+# points_x = np.array(mylist_x)
+# column_points = np.unique(points_x)
+# mylist_y = [x[1] for x in dots]
+# points_y = np.array(mylist_y)
+# row_points = np.unique(points_y)
+
+# var2
+myset_x = set(x[0] for x in dots)
+column_points = sorted(list(myset_x))
+myset_y = set(x[1] for x in dots)
+row_points = sorted(list(myset_y))
