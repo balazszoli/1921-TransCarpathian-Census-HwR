@@ -18,23 +18,22 @@ img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
 from collections import OrderedDict
 from collections import defaultdict
 
-
 # Run edge detection
 # TODO to achive better result we can adjust Canny parameters
 canny_params = [50, 300]
-dst = cv2.Canny(img, canny_params[0], canny_params[1], None, 3) # 200 -> 300
+dst = cv2.Canny(img, canny_params[0], canny_params[1], None, 3)  # 200 -> 300
 
 # Find lines with Probabilistic Hough Line Transform (https://docs.opencv.org/3.4/d9/db0/tutorial_hough_lines.html)
 lines = cv2.HoughLinesP(dst, 1, np.pi / 180, 50, None, 220, 10)
 
 # Check if lines are parallel to layout edges, if not - rotate the image, and rerun Canny and HoughLinesP
-a=[]
+a = []
 for i in range(0, len(lines)):
     l = lines[i][0]
     angle = np.arctan2(l[3] - l[1], l[2] - l[0]) * 180. / np.pi
     a.append(angle)
 angle_most = mode(a)
-if abs(angle_most+90) <= 1 or abs(angle_most) <= 1:  #
+if abs(angle_most + 90) <= 1 or abs(angle_most) <= 1:  #
     angle = angle_most
 else:
     if -45 < angle_most < 45:
@@ -57,7 +56,7 @@ vertical = dict()
 for i in range(0, len(lines)):
     l = lines[i][0]
     angel = np.arctan2(l[3] - l[1], l[2] - l[0]) * 180. / np.pi
-    if (angel > -91 and angel < -89 ):
+    if (angel > -91 and angel < -89):
         vertical[l[0]] = [l[0], 0, l[2], cdst.shape[0]]
     if (angel == 0):
         horizontal[l[1]] = [0, l[1], cdst.shape[1], l[3]]
@@ -98,10 +97,11 @@ lines = horizontal + vertical
 for l in lines:
     cv2.line(cdst, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 3, cv2.LINE_AA)
 
+
 # Var4: Works only if lines are exactly horizontal (l1[1] == l1[3]) and vertical (l2[0] == l2[2]). For our case is OK!
 
-def intersect4(l1,l2):
-#    l1 - horizontal, l2 vertical, else swap
+def intersect4(l1, l2):
+    #    l1 - horizontal, l2 vertical, else swap
     if l2[1] == l2[3]:
         l1, l2 = l2, l1
     if (l1[0] <= l2[0] <= l1[2]) and (l2[1] <= l1[1] <= l2[3]):
@@ -112,6 +112,7 @@ def intersect4(l1,l2):
         print(' --> No intersection')
         return False
 
+
 dots = []
 
 for hor_line in horizontal:
@@ -121,7 +122,7 @@ for hor_line in horizontal:
         inter = intersect4(hor_line, ver_line)
         if inter:
             dots.append(inter)
-            cv2.circle(cdst, inter, 10, (255, 0, 0) , 2)
+            cv2.circle(cdst, inter, 10, (255, 0, 0), 2)
 
 dpi = plt.rcParams['figure.dpi']
 height, width, depth = cdst.shape
