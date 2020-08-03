@@ -79,3 +79,16 @@ myset_x = set(x[0] for x in dots)
 column_points = sorted(list(myset_x))
 myset_y = set(x[1] for x in dots)
 row_points = sorted(list(myset_y))
+
+
+Leiras:
+http://www.archivportal.hu/hu/blog/elerhetoek-a-hungaricanan-az-1921-es-csehszlovakiai-nepszamlalas-karpataljara-vonatkozo-iratai/
+
+Model:
+https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-from-scratch-for-mnist-handwritten-digit-classification/
+
+IF training the model on GPU (https://colab.research.google.com/) epochs=10, batch_size=32 Then the train set accuracy: 0.9993
+
+
+
+

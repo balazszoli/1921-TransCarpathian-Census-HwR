@@ -8,9 +8,9 @@ from imutils import rotate  # image rotation
 from statistics import mode  # counting line angle mode, the most common value of angles
 
 # filename = 'images/kajdano.png'  # moved images to images folder
-# filename = 'images/kajdano2.png'
+filename = 'images/kajdano2.png'
 # filename = 'images/sebesh.png'
-filename = 'images/test.png'
+# filename = 'images/test.png'
 
 # TODO maybe we need filter out red color before grayscale???
 img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
@@ -20,7 +20,14 @@ from collections import defaultdict
 
 # Run edge detection
 # TODO to achive better result we can adjust Canny parameters
-canny_params = [50, 300]
+# https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
+# compute the median of the single channel pixel intensities
+canny_params =[]
+v = np.median(img)
+sigma = 0.33
+# apply automatic Canny edge detection using the computed median
+canny_params.append(int(max(0, (1.0 - sigma) * v)))
+canny_params.append(int(min(255, (1.0 + sigma) * v)))
 dst = cv2.Canny(img, canny_params[0], canny_params[1], None, 3)  # 200 -> 300
 
 # Find lines with Probabilistic Hough Line Transform (https://docs.opencv.org/3.4/d9/db0/tutorial_hough_lines.html)
@@ -106,19 +113,19 @@ def intersect4(l1, l2):
         l1, l2 = l2, l1
     if (l1[0] <= l2[0] <= l1[2]) and (l2[1] <= l1[1] <= l2[3]):
         x, y = l2[0], l1[1]
-        print(' --> intersect: ', x, y)
+#        print(' --> intersect: ', x, y)
         return x, y
     else:
-        print(' --> No intersection')
+#       print(' --> No intersection')
         return False
 
 
 dots = []
 
 for hor_line in horizontal:
-    print(hor_line)
+#    print(hor_line)
     for ver_line in vertical:
-        print(ver_line, end='')
+#        print(ver_line, end='')
         inter = intersect4(hor_line, ver_line)
         if inter:
             dots.append(inter)
@@ -156,9 +163,34 @@ column_points = sorted(list(myset_x))
 myset_y = set(x[1] for x in dots)
 row_points = sorted(list(myset_y))
 
+line_delta = min(3,int(max(height,width)/800))  # all heights/widths that differ less than line_delta, count equal.
+# need it to have images, that have nearly same dimensions, count as same
+heights = []
+widths = []
+
 # crop image on intersection points, create pictures
 for i in range(0, len(column_points)-1):
+    w_exists = False
+    width2check = column_points[i+1] - column_points[i]
+    for w in widths:
+        if abs(w - width2check) <= line_delta:
+            width2check = w
+            w_exists = True
+            break
+    if not(w_exists):
+        widths.append(width2check)
     for j in range(1, len(row_points)-2):
-        crop_img = cdstP[row_points[j]:row_points[j+1], column_points[i]:column_points[i+1]].copy()  # using copy instead of original photo
+        h_exists = False
+        height2check = row_points[j+1]-row_points[j]
+        for h in heights:
+            if abs(h-height2check) <= line_delta:
+                height2check = h
+                h_exists = True
+                break
+        if not (h_exists):
+            heights.append(height2check)
+        crop_img = cdstP[row_points[j]:row_points[j]+height2check+1, column_points[i]:column_points[i]+width2check].copy()  # using copy instead of original photo
         f_name = filename[:-4] + '-crop-' + str(i).zfill(2) + '-' + str(j).zfill(2) + '.jpg'
         cv2.imwrite(f_name, crop_img)  # instead of creating images, we can write images to 3D array cdst.shape
+
+# TODO Make a Dataset creator based on cropped images. Get Image, show it, and assign a label -> dataset_creator.py
