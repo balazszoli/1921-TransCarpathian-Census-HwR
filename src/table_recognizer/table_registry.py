@@ -3,9 +3,9 @@ import cv2
 from collections import OrderedDict
 from src.table_recognizer.base_recognizer import recognize_table, adjust_table
 from src.table_recognizer.surname_table_recognizer import BaseRecognizer, Table
+import logging as log
 
 TABLE_REGISTRY = OrderedDict()
-
 
 class TableConfig(object):
 
@@ -29,3 +29,8 @@ def register_table(table_config):
         raise ValueError(f"Table '{table_config.recognizer.name}' is already registered")
 
     TABLE_REGISTRY[table_config.name] = table_config
+
+    log.debug(f'{table_config.name} was registered')
+
+    return TABLE_REGISTRY
+

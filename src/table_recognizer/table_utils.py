@@ -4,7 +4,19 @@ import numpy as np
 from src.utils.math_utils import line_equation_coefficients, line_intersection
 
 
-def continue_lines(lines, img_height, img_width):
+def continue_lines(lines: np.ndarray, img_height: int, img_width: int):
+    """
+    Extract all horizontal and vertical lines from image
+    and continue them to image border
+    >>> continue_lines(np.array([[[10, 60, 10, 30]]]), 100, 80)
+    # [[],[[50, 0, 50, 100]]]
+
+    @param lines: a list of lines
+    @param img_height:
+    @param img_width:
+
+    @return: return vertical and horizontal lines lists
+    """
     horizontal = dict()
     vertical = dict()
     for i in range(0, len(lines)):
@@ -25,6 +37,9 @@ def continue_lines(lines, img_height, img_width):
 
 
 def reduce_lines(lines, border, threshold=10):
+    if not lines:
+        return []
+
     buckets = []
     prev = next(iter(lines.keys()))
     current_bucket = []
