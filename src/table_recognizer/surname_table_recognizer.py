@@ -49,8 +49,10 @@ class SurnameTitleTableRecognizer(BaseRecognizer):
     template_table_name = '../images/table_tamplates/surname.png'
 
     def get_template(self):
+        # TODO Adjust this kind of tables
         if self.template is None:
             self.template = recognize_table(cv2.imread(self.template_table_name, cv2.IMREAD_GRAYSCALE))
+        return self.template
 
 
 class Table:
@@ -59,18 +61,18 @@ class Table:
         self.img = img
         self.rows = rows
 
-    def get_column_data(self, column_num):
+    def column_data(self, column_num):
         """
         Return only data rows from table.
 
         @param column_num: column number
         @return: return rows without headers
         """
-        rows = self.get_column_rows(column_num)
+        rows = self.column_rows(column_num)
 
         return rows[3:]
 
-    def get_column_rows(self, column_num):
+    def column_rows(self, column_num):
         """
         Get list of cells from table
 

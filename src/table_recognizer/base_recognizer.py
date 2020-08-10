@@ -19,8 +19,6 @@ def recognize_table(img):
 
     # Run line detection
     lines = cv2.HoughLinesP(canny_image, 1, np.pi / 180, 50, None, 220, 10)
-    if log.level == logging.DEBUG:
-        write_lines(img, lines)
 
     # TODO: rotate image is table is not ...
     horizontal, vertical = continue_lines(lines, img_height, img_width)
