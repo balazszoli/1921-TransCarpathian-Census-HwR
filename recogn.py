@@ -10,7 +10,7 @@ from statistics import mode  # counting line angle mode, the most common value o
 # filename = 'images/kajdano.png'  # moved images to images folder
 # filename = 'images/kajdano2.png'
 # filename = 'images/sebesh.png'
-filename = 'images/test.png'
+filename = 'images/table_tamplates/surname.png'
 
 # TODO maybe we need filter out red color before grayscale???
 img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
