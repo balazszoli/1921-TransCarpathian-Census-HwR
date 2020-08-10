@@ -1,15 +1,15 @@
-import cv2
+import logging
 
-from src.table_recognizer.surname_table_recognizer import SurnameTableRecognizer
-from src.table_recognizer.table_registry import register_table, TableConfig
+from table_recognizer.surname_table_recognizer import SurnameTableRecognizer, HOUSE_NUMBER_COLUMN
+from utils.image_utils import write_cells
 
-import logging as log
+FORMAT = '%(asctime)-15s  %(message)s'
+logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
-log.basicConfig(level=log.DEBUG)
+log = logging.getLogger(__name__)
 
-TABLE_REGISTRY = register_table(
-    TableConfig(
-        recognizer=SurnameTableRecognizer,
-        template_table_name='../images/table_tamplates/surname.png'
-    )
-)
+
+# Just for test
+recog = SurnameTableRecognizer()
+table = recog.recognize('../images/surname_tables/test2.png')
+write_cells(table.img, table.get_column_data(HOUSE_NUMBER_COLUMN))

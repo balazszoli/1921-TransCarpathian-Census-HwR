@@ -2,8 +2,11 @@ import cv2
 import numpy as np
 
 from src.table_recognizer.table_utils import continue_lines, find_line_intersection_points
-from src.utils.image_utils import write_lines
+from src.utils.image_utils import write_lines, write_dots
 
+import logging
+
+log = logging.getLogger(__name__)
 
 def recognize_table(img):
     img_height = img.shape[0]
@@ -13,14 +16,18 @@ def recognize_table(img):
     # TODO to achive better result we can adjust Canny parameters
     # or at least make it configurable
     canny_image = cv2.Canny(img, 50, 200, None, 3)
+
     # Run line detection
     lines = cv2.HoughLinesP(canny_image, 1, np.pi / 180, 50, None, 220, 10)
-    # write_lines(img, lines)
+    if log.level == logging.DEBUG:
+        write_lines(img, lines)
 
     # TODO: rotate image is table is not ...
     horizontal, vertical = continue_lines(lines, img_height, img_width)
 
     cell_intersection_positions = find_line_intersection_points(horizontal, vertical)
+    if log.level == logging.DEBUG:
+        write_dots(img, lines)
 
     return cell_intersection_positions
 
