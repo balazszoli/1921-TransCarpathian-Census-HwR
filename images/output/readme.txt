@@ -1,0 +1,1 @@
+Output generated images
