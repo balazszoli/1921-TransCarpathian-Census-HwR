@@ -35,11 +35,11 @@ def rotate_image(image, angle):
     return result
 
 
-def write_cells(img, cell_position):
+def write_cells(img, file_name, cell_position):
     for rec in cell_position:
         cv2.rectangle(img, rec[0], rec[-1], (255, 255, 255), 2)
 
-    cv2.imwrite(OUTPUT_DIR + "cells.jpg", img.copy())
+    cv2.imwrite(OUTPUT_DIR + file_name + "_cells.jpg", img.copy())
 
 
 def write_dots(img, positions):
