@@ -1,22 +1,47 @@
 from collections import OrderedDict
+
+import cv2
 import numpy as np
 
 from src.utils.math_utils import line_equation_coefficients, line_intersection
 
+import logging
 
-def continue_lines(lines: np.ndarray, img_height: int, img_width: int):
+from utils.image_utils import binarize_image, align_table
+
+log = logging.getLogger(__name__)
+
+
+def find_lines(img):
+    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 50, None, 220, 10)
+    return lines
+
+
+def find_table_cells_position(img):
+    img = binarize_image(img)
+    img = align_table(img)
+    lines = find_lines(img)
+
+    horizontal, vertical = continue_lines(img, lines)
+
+    return find_line_intersection_points(horizontal, vertical)
+
+
+def continue_lines(img: np.ndarray, lines: np.ndarray):
     """
     Extract all horizontal and vertical lines from image
     and continue them to image border
     >>> continue_lines(np.array([[[10, 60, 10, 30]]]), 100, 80)
     # [[],[[50, 0, 50, 100]]]
 
+    @param img: image
     @param lines: a list of lines
-    @param img_height:
-    @param img_width:
 
     @return: return vertical and horizontal lines lists
     """
+    img_height = img.shape[0]
+    img_width = img.shape[1]
+
     horizontal = dict()
     vertical = dict()
     for i in range(0, len(lines)):
@@ -90,3 +115,22 @@ def find_line_intersection_points(horizontal, vertical):
         dots.append(row)
 
     return dots
+
+
+def complete_table_from_template(template_table, actual_table):
+    """
+    While recognizing image we can lose some columns or rows
+    Here we should use template table to complete actual table
+    """
+
+    template_table_top_left_angel = template_table[0][0]
+    top_left_angel = actual_table[0][0]
+
+    # This is the simples solution to adjust table to template
+    # For first attempt would be OK :)
+    # translation is a geometric transformation that moves every point of a figure or a space
+    # by the same distance in a given direction.
+    a = top_left_angel[0] - template_table_top_left_angel[0]
+    b = top_left_angel[1] - template_table_top_left_angel[1]
+
+    return [[(a + point[0], b + point[1]) for point in row] for row in template_table]
