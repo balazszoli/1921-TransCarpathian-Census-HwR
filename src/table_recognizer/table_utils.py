@@ -8,6 +8,7 @@ from src.utils.math_utils import line_equation_coefficients, line_intersection
 import logging
 
 from utils.image_utils import binarize_image, align_table
+from utils.log_utils import log_image, log_lines
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +24,6 @@ def find_table_cells_position(img):
     lines = find_lines(img)
 
     horizontal, vertical = continue_lines(img, lines)
-
     return find_line_intersection_points(horizontal, vertical)
 
 

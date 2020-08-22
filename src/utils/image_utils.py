@@ -12,7 +12,7 @@ OUTPUT_DIR = '../images/output/'
 
 def binarize_image(img):
     blured1 = cv2.medianBlur(img, 1)
-    blured2 = cv2.medianBlur(img, 31)
+    blured2 = cv2.medianBlur(img, 17)
     divided = np.ma.divide(blured1, blured2).data
     normed = np.uint8(255 * divided / divided.max())
     th, threshed = cv2.threshold(normed, 100, 255, cv2.THRESH_OTSU)
@@ -94,3 +94,13 @@ def write_lines(img, lines, file_name='lines.png', destination=''):
         cv2.line(img, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 3, cv2.LINE_AA)
 
     cv2.imwrite(os.path.join(destination, file_name), img)
+
+
+def canny(img):
+    canny_params =[]
+    v = np.median(img)
+    sigma = 0.33
+    # apply automatic Canny edge detection using the computed median
+    canny_params.append(int(max(0, (1.0 - sigma) * v)))
+    canny_params.append(int(min(255, (1.0 + sigma) * v)))
+    return cv2.Canny(img, canny_params[0], canny_params[1], None, 3)  # 200 -> 300
