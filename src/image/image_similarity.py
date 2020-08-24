@@ -4,7 +4,7 @@ import pickle
 import cv2
 import scipy.spatial.distance
 
-from pipline import Pipeline
+from pipes.pipline import Pipeline
 import numpy as np
 
 import logging

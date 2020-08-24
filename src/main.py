@@ -1,15 +1,20 @@
 import logging
 import pickle
 
-from image.image_similarity import batch_extractor, FeatureExtractorPipe, Matcher, ImageFilter
-from pipline import LoadImages, ImageToTable, LoadImage, ImageBinarizationPipe, ScaleImagePipe, ImageCannyPipe, \
-    ImageAlignPipe
-from table_recognizer.surname_table_recognizer import SURNAME_COLUMN
+from image.image_similarity import FeatureExtractorPipe, Matcher, ImageFilter
+from pipes.image_loader_pipes import LoadImagesFromWeb, LoadImages
+from pipes.pipline import ImageCannyPipe, ScaleImagePipe, ImageAlignPipe
 
 FORMAT = '%(asctime)-15s  %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
 log = logging.getLogger(__name__)
+
+
+loader = LoadImagesFromWeb()
+for data in loader:
+    pass
+
 
 # ----------------------------------------------------
 # Create image matcher
