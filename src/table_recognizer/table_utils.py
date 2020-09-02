@@ -15,19 +15,19 @@ log = logging.getLogger(__name__)
 
 def find_lines(img):
     lines = cv2.HoughLinesP(img, 1, np.pi / 180, 50, None, 220, 10)
+    lines = [[line[0][0], line[0][1], line[0][2], line[0][3]] for line in lines]
+
     return lines
 
 
 def find_table_cells_position(img):
-    img = binarize_image(img)
-    img = align_table(img)
     lines = find_lines(img)
 
     horizontal, vertical = continue_lines(img, lines)
     return find_line_intersection_points(horizontal, vertical)
 
 
-def continue_lines(img: np.ndarray, lines: np.ndarray):
+def continue_lines(img: np.ndarray, lines: list):
     """
     Extract all horizontal and vertical lines from image
     and continue them to image border
@@ -44,8 +44,7 @@ def continue_lines(img: np.ndarray, lines: np.ndarray):
 
     horizontal = dict()
     vertical = dict()
-    for i in range(0, len(lines)):
-        line = lines[i][0]
+    for line in lines:
         angel = np.arctan2(line[3] - line[1], line[2] - line[0]) * 180. / np.pi
 
         if -91 < angel < -89:

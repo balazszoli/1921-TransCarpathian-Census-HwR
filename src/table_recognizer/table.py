@@ -1,6 +1,5 @@
 class Table:
-    def __init__(self, img, rows):
-        self.img = img
+    def __init__(self, rows):
         self.rows = rows
 
     def column_data(self, column_num):

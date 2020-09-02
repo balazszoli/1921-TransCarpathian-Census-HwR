@@ -90,7 +90,6 @@ def write_lines(img, lines, file_name='lines.png', destination=''):
     img = img.copy()
 
     for line in lines:
-        line = line[0]
         cv2.line(img, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 3, cv2.LINE_AA)
 
     cv2.imwrite(os.path.join(destination, file_name), img)

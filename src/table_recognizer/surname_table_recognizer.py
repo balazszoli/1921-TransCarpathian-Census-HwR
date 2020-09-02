@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 from table_recognizer.table import Table
 
 from table_recognizer.table_utils import complete_table_from_template, find_table_cells_position
-from utils.image_utils import load_image
+from utils.image_utils import load_image, align_table, binarize_image
 
 import logging
 
@@ -16,29 +16,35 @@ SURNAME_COLUMN = 5
 class BaseRecognizer(ABC):
     template = None
 
+    def get_template(self, img):
+        img = binarize_image(img)
+        img = align_table(img)
+
+        return find_table_cells_position(img)
+
     @abstractmethod
     def recognize(self, data):
-        pass
+        raise NotImplementedError
 
 
 class SurnameTableRecognizer(BaseRecognizer):
     template_table_name = '../images/table_tamplates/surname.png'
 
     def __init__(self):
-        self.template = find_table_cells_position(load_image(self.template_table_name))
+        self.template = self.get_template(load_image(self.template_table_name))
 
     def recognize(self, img):
         cells = find_table_cells_position(img)
         rows = complete_table_from_template(self.template, cells)
 
-        return Table(img, rows)
+        return Table(rows)
 
 
 class SurnameTitleTableRecognizer(BaseRecognizer):
     template_table_name = '../images/table_tamplates/surname.png'
 
     def __init__(self):
-        self.template = find_table_cells_position(load_image(self.template_table_name))
+        self.template = self.get_template(load_image(self.template_table_name))
 
     def recognize(self, img):
         # TODO: load template for title surname table
