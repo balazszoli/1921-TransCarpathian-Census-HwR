@@ -1,6 +1,7 @@
 import logging
 import os
 import tempfile
+from os import listdir
 from os.path import isfile, join
 from urllib.error import HTTPError
 from urllib.request import urlopen
@@ -65,35 +66,51 @@ class LoadImages(Pipeline):
 
 
 DOWNLOADS_IMAGE_DIR = '../images/downloads/'
-BASE_URL = "https://library.hungaricana.hu/en/view/KANepszaml_010_Oroszveg_Kajdano__139_Kajdanove-Kajdano"
 
 
 class LoadImagesFromWeb(Pipeline):
     def __init__(self, base_url):
         super().__init__()
-        self.page_count = 1
+        self.page_count = 0
         self.base_url = base_url
+
+        place_name = self.base_url.split('/')[-1]
+        self.dst_dir = DOWNLOADS_IMAGE_DIR + place_name
+        try:
+            self.pdf_access_url = self.get_pdf_access_url(self.base_url)
+            log.info(f'PDF access URL is: {self.pdf_access_url}')
+        except HTTPError:
+            raise
+
+        self.files = None
+        if os.path.exists(DOWNLOADS_IMAGE_DIR + place_name):
+            files = [f for f in listdir(DOWNLOADS_IMAGE_DIR + place_name) if isfile(join(DOWNLOADS_IMAGE_DIR + place_name, f))]
+            self.files = files
 
     def generator(self):
         while True:
-            try:
-                pdf_access_url = self.get_pdf_access_url(self.base_url)
-                log.info(f'PDF access URL is: {pdf_access_url}')
-            except HTTPError:
-                raise
-
             page = "page{:04d}.pdf".format(self.page_count)
-            log.info(f'Current page: {page}')
 
-            pdf_file = self.load_pdf_to_temp_file(pdf_access_url, page)
+            page_file = None
+            if self.files is not None:
+                page_file = next((file for file in self.files if file.startswith(page)), None)
 
-            place_name = self.base_url.split('/')[-1]
-            self.mkdir(DOWNLOADS_IMAGE_DIR + place_name)
+            if not page_file:
+                dst_file = self.dst_dir + '/' + page
 
-            img_path = pdf_to_image(pdf_file, DOWNLOADS_IMAGE_DIR + place_name + '/' + page)
-            log.info(f'Image was saved to: {img_path}')
+                log.info(f'Current page: {page}')
+                pdf_file = self.load_pdf_to_temp_file(self.pdf_access_url, page)
+
+                self.mkdir(self.dst_dir)
+
+                img_path = pdf_to_image(pdf_file, dst_file)
+                log.info(f'Image was saved to: {img_path}')
+            else:
+                img_path = self.dst_dir + '/' + page_file
+                log.info(f'File {img_path} already downloaded. ')
 
             image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+            log.info(f'Image shapes {image.shape}')
 
             data = {
                 "img_path": img_path,
@@ -105,7 +122,6 @@ class LoadImagesFromWeb(Pipeline):
                 yield self.map(data)
 
             self.page_count += 1
-
 
     def get_pdf_access_url(self, page_url):
         html = urlopen(page_url).read().decode("utf-8")
