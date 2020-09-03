@@ -100,7 +100,7 @@ def write_points(img: Image, points, file_name='dots.png', destination=''):
         for point in row:
             cv2.circle(img.data, tuple(point), 10, (255, 0, 0), 2)
 
-    cv2.imwrite(os.path.join(destination, file_name), img)
+    cv2.imwrite(os.path.join(destination, file_name), img.data)
 
 
 def write_lines(img: Image, lines, file_name='lines.png', destination=''):
@@ -109,7 +109,7 @@ def write_lines(img: Image, lines, file_name='lines.png', destination=''):
     for line in lines:
         cv2.line(img.data, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 3, cv2.LINE_AA)
 
-    cv2.imwrite(os.path.join(destination, file_name), img)
+    cv2.imwrite(os.path.join(destination, file_name), img.data)
 
 
 def canny(img: Image) -> Image:
@@ -119,7 +119,7 @@ def canny(img: Image) -> Image:
     # apply automatic Canny edge detection using the computed median
     canny_params.append(int(max(0, (1.0 - sigma) * v)))
     canny_params.append(int(min(255, (1.0 + sigma) * v)))
-    canny_data = cv2.Canny(img, canny_params[0], canny_params[1], None, 3)  # 200 -> 300
+    canny_data = cv2.Canny(img.data, canny_params[0], canny_params[1], None, 3)  # 200 -> 300
 
     return Image(canny_data, img.file_name)
 

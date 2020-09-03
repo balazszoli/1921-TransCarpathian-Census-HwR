@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     rec = SurnameTableRecognizer()
 
-    img = load_image('../images/surname_tables/test.png')
+    img = load_image('../images/surname_tables/test2.png')
     table = rec.recognize(img)
 
     write_cells(img, table.rows)

@@ -23,6 +23,8 @@ def find_lines(img):
 def find_table_cells_position(img):
     lines = find_lines(img)
 
+    log_lines(img, lines)
+
     horizontal, vertical = continue_lines(img, lines)
     return find_line_intersection_points(horizontal, vertical)
 

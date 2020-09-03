@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 from table_recognizer.table import Table
 
 from table_recognizer.table_utils import complete_table_from_template, find_table_cells_position
-from utils.image_utils import load_image, align_image, binarize_image, Image
+from utils.image_utils import load_image, align_image, binarize_image, Image, canny
 
 import logging
 
@@ -29,7 +29,8 @@ class BaseRecognizer(ABC):
         return cells
 
     def process_img(self, img: Image) -> Image:
-        img = binarize_image(img)
+        # img = binarize_image(img)
+        img = canny(img)
         img = align_image(img)
         return img
 
