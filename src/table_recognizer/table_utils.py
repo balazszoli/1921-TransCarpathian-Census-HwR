@@ -7,14 +7,14 @@ from src.utils.math_utils import line_equation_coefficients, line_intersection
 
 import logging
 
-from utils.image_utils import binarize_image, align_table
+from utils.image_utils import binarize_image, align_image, Image
 from utils.log_utils import log_image, log_lines
 
 log = logging.getLogger(__name__)
 
 
 def find_lines(img):
-    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 50, None, 220, 10)
+    lines = cv2.HoughLinesP(img.data, 1, np.pi / 180, 50, None, 220, 10)
     lines = [[line[0][0], line[0][1], line[0][2], line[0][3]] for line in lines]
 
     return lines
@@ -27,11 +27,11 @@ def find_table_cells_position(img):
     return find_line_intersection_points(horizontal, vertical)
 
 
-def continue_lines(img: np.ndarray, lines: list):
+def continue_lines(img: Image, lines: list):
     """
     Extract all horizontal and vertical lines from image
     and continue them to image border
-    >>> continue_lines(np.array([[[10, 60, 10, 30]]]), 100, 80)
+    >>> continue_lines(Image(np.array([[[10, 60, 10, 30]]], 'file_name.png'), [])
     # [[],[[50, 0, 50, 100]]]
 
     @param img: image
@@ -39,8 +39,8 @@ def continue_lines(img: np.ndarray, lines: list):
 
     @return: return vertical and horizontal lines lists
     """
-    img_height = img.shape[0]
-    img_width = img.shape[1]
+    img_height = img.data.shape[0]
+    img_width = img.data.shape[1]
 
     horizontal = dict()
     vertical = dict()

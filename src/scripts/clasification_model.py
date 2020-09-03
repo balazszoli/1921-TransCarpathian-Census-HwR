@@ -72,22 +72,6 @@ def download_training_images():
                 log.info(f'Already exist: {city}-{page}.jpg')
 
 
-def get_pdf_access_url(page_url):
-    html = urlopen(page_url).read().decode("utf-8")
-
-    start_index = html.find('"pdfAccessUrl": "') + len('"pdfAccessUrl": "')
-    end_index = html[start_index:].find('",') + start_index
-
-    pdf_access_url = html[start_index:end_index]
-
-    if not pdf_access_url:
-        raise ValueError(f'invalid pdf_access_url for: {page_url}')
-
-    log.info(f'PDF access URL: {pdf_access_url}')
-
-    return pdf_access_url
-
-
 def mkdir(dir):
     Path(dir).mkdir(parents=True, exist_ok=True)
 
